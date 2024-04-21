@@ -28,10 +28,16 @@ def get_face_enhancer() -> Any:
 
 
 def get_device() -> str:
+    print("this is globles .......................................",roop.globals.execution_providers)
     if 'CUDAExecutionProvider' in roop.globals.execution_providers:
         return 'cuda'
+    if 'AzureExecutionProvider' in roop.globals.execution_providers:
+        print("azure is selected .................")
+        return 'azure'
     if 'CoreMLExecutionProvider' in roop.globals.execution_providers:
+        print("ML CORE is selected .................")
         return 'mps'
+    print("CPU is selected .................")
     return 'cpu'
 
 

@@ -17,7 +17,7 @@ import onnxruntime
 import tensorflow
 import roop.globals
 import roop.metadata
-import roop.ui as ui
+# import roop.ui as ui
 from roop.predictor import predict_image, predict_video
 from roop.processors.frame.core import get_frame_processors_modules
 from roop.utilities import has_image_extension, is_image, is_video, detect_fps, create_video, extract_frames, get_temp_frame_paths, restore_audio, create_temp, move_temp, clean_temp, normalize_output_path
@@ -45,7 +45,7 @@ def parse_args() -> None:
     program.add_argument('--output-video-encoder', help='encoder used for the output video', dest='output_video_encoder', default='libx264', choices=['libx264', 'libx265', 'libvpx-vp9', 'h264_nvenc', 'hevc_nvenc'])
     program.add_argument('--output-video-quality', help='quality used for the output video', dest='output_video_quality', type=int, default=35, choices=range(101), metavar='[0-100]')
     program.add_argument('--max-memory', help='maximum amount of RAM in GB', dest='max_memory', type=int)
-    program.add_argument('--execution-provider', help='available execution provider (choices: cpu, ...)', dest='execution_provider', default=['cpu'], choices=suggest_execution_providers(), nargs='+')
+    program.add_argument('--execution-provider', help='available execution provider (choices: cpu, ...)', dest='execution_provider', default=['cuda'], choices=suggest_execution_providers(), nargs='+')
     program.add_argument('--execution-threads', help='number of execution threads', dest='execution_threads', type=int, default=suggest_execution_threads())
     program.add_argument('-v', '--version', action='version', version=f'{roop.metadata.name} {roop.metadata.version}')
 
@@ -73,20 +73,31 @@ def parse_args() -> None:
 
 
 def encode_execution_providers(execution_providers: List[str]) -> List[str]:
-    return [execution_provider.replace('ExecutionProvider', '').lower() for execution_provider in execution_providers]
+    print("execution_providers1",execution_providers)
+    pro=[execution_provider.replace('ExecutionProvider', '').lower() for execution_provider in execution_providers]
+    print("pro1",pro)
+    return pro
 
 
 def decode_execution_providers(execution_providers: List[str]) -> List[str]:
-    return [provider for provider, encoded_execution_provider in zip(onnxruntime.get_available_providers(), encode_execution_providers(onnxruntime.get_available_providers()))
+    print("execution_providers2",execution_providers)
+    pro=[provider for provider, encoded_execution_provider in zip(onnxruntime.get_available_providers(), encode_execution_providers(onnxruntime.get_available_providers()))
             if any(execution_provider in encoded_execution_provider for execution_provider in execution_providers)]
+    print("pro2",pro)
+    return pro
 
 
 def suggest_execution_providers() -> List[str]:
-    return encode_execution_providers(onnxruntime.get_available_providers())
+    pro=encode_execution_providers(onnxruntime.get_available_providers())
+    print("\v")
+    print("pro3 ",pro," this is end   .........................")
+    print("\v")
+    return pro
 
 
 def suggest_execution_threads() -> int:
     if 'CUDAExecutionProvider' in onnxruntime.get_available_providers():
+        print("these are threas",onnxruntime.get_available_providers())
         return 8
     return 1
 
@@ -214,7 +225,9 @@ def run() -> None:
             return
     limit_resources()
     if roop.globals.headless:
+        print(f'Processing...')
         start()
     else:
-        window = ui.init(start, destroy)
-        window.mainloop()
+        print("this should not be called")
+    #     window = ui.init(start, destroy)
+    #     window.mainloop()
